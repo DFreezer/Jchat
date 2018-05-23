@@ -4,7 +4,6 @@ import jchat.db.dataSet.*;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Set;
 
 public interface UserService {
     int createUser(String username, String password, String email, Date regDate, boolean status);
@@ -13,10 +12,10 @@ public interface UserService {
     void deleteUser(User user);
     User getUserByName(String username);
     UserInfo getUserInfo(int idUser);
-    Set<UserContact> getUserContacts(int idUser);
-    Set<Message> getUserMessages(int idUser);
-    Set<Group> getUserGroups(int idUser);
-    Set<UserRole> getUserRoles(int idUser);
+    List<UserContact> getUserContacts(int idUser);
+    List<Message> getUserMessages(int idUser);
+    List<Group> getUserGroups(int idUser);
+    List<UserRole> getUserRoles(int idUser);
     int createUserInfo(UserInfo userInfo);
     void updateUserInfo(UserInfo userInfo);
     void deleteUserInfo(UserInfo userInfo);
@@ -25,4 +24,5 @@ public interface UserService {
     Message readMessage(int idMessage);
     void updateMessage(Message message);
     void deleteMessage(Message message);
+    void deleteMessageById(int idMessage);
 }

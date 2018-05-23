@@ -2,12 +2,16 @@ package jchat.db.service.impl;
 
 import jchat.db.dao.GroupDAO;
 import jchat.db.dao.GroupMessageDAO;
+import jchat.db.dao.GroupUserDAO;
 import jchat.db.dataSet.Group;
 import jchat.db.dataSet.GroupMessage;
+import jchat.db.dataSet.GroupUser;
 import jchat.db.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("groupService")
 @Transactional(rollbackFor = Exception.class)
@@ -15,11 +19,13 @@ public class GroupServiceImpl implements GroupService {
 
     private final GroupMessageDAO groupMessageDAO;
     private final GroupDAO groupDAO;
+    private final GroupUserDAO groupUserDAO;
 
     @Autowired
-    public GroupServiceImpl(GroupDAO groupDAO, GroupMessageDAO groupMessageDAO) {
+    public GroupServiceImpl(GroupDAO groupDAO, GroupMessageDAO groupMessageDAO, GroupUserDAO groupUserDAO) {
         this.groupDAO = groupDAO;
         this.groupMessageDAO = groupMessageDAO;
+        this.groupUserDAO = groupUserDAO;
     }
 
     @Override
@@ -68,5 +74,17 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteGroupMessage(GroupMessage groupMessage) {
         groupMessageDAO.delete(groupMessage);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<GroupMessage> getGroupMessages(int idGroup) {
+        return groupMessageDAO.getGroupMessages(idGroup);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<GroupUser> getGroupUsers(int idGroup) {
+        return groupUserDAO.getGroupUsers(idGroup);
     }
 }

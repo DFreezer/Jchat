@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
@@ -55,26 +54,36 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public UserInfo getUserInfo(int idUser) {
-        return read(idUser).getUserInfo();
+        Query<UserInfo> query = sessionFactory.getCurrentSession().createQuery("from UserInfo where user.idUser =:idUser", UserInfo.class);
+        query.setParameter("idUser", idUser);
+        return query.uniqueResult();
     }
 
     @Override
-    public Set<UserContact> getUserContacts(int idUser) {
-        return read(idUser).getUserContacts();
+    public List<UserContact> getUserContacts(int idUser) {
+        Query<UserContact> query = sessionFactory.getCurrentSession().createQuery("from UserContact userContact join fetch userContact.user join fetch userContact.contact where userContact.user.idUser =:idUser", UserContact.class);
+        query.setParameter("idUser", idUser);
+        return query.getResultList();
     }
 
     @Override
-    public Set<Message> getUserMessages(int idUser) {
-        return read(idUser).getMessages();
+    public List<Message> getUserMessages(int idUser) {
+        Query<Message> query = sessionFactory.getCurrentSession().createQuery("from Message where user.idUser =:idUser", Message.class);
+        query.setParameter("idUser", idUser);
+        return query.getResultList();
     }
 
     @Override
-    public Set<Group> getUserGroups(int idUser) {
-        return read(idUser).getGroups();
+    public List<Group> getUserGroups(int idUser) {
+        Query<Group> query = sessionFactory.getCurrentSession().createQuery("from Group where creator.idUser =:idUser", Group.class);
+        query.setParameter("idUser", idUser);
+        return query.getResultList();
     }
 
     @Override
-    public Set<UserRole> getUserRoles(int idUser) {
-        return read(idUser).getRoles();
+    public List<UserRole> getUserRoles(int idUser) {
+        Query<UserRole> query = sessionFactory.getCurrentSession().createQuery("from UserRole where user.idUser =:idUser", UserRole.class);
+        query.setParameter("idUser", idUser);
+        return query.getResultList();
     }
 }

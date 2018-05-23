@@ -18,7 +18,7 @@ public class Message {
     @Column(name = "date")
     private Date date;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinColumn(name = "idSender")
     private User sender;
 
@@ -69,7 +69,6 @@ public class Message {
                 "idMessage=" + idMessage +
                 ", body='" + body + '\'' +
                 ", date='" + date + '\'' +
-                ", sender=" + sender +
                 '}';
     }
 }

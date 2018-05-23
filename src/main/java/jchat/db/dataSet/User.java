@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -37,7 +38,6 @@ public class User {
     private UserInfo userInfo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    //@LazyCollection(LazyCollectionOption.FALSE)
     @JsonIgnore
     private Set<UserContact> userContacts;
 

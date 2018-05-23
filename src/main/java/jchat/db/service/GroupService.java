@@ -2,6 +2,9 @@ package jchat.db.service;
 
 import jchat.db.dataSet.Group;
 import jchat.db.dataSet.GroupMessage;
+import jchat.db.dataSet.GroupUser;
+
+import java.util.List;
 
 public interface GroupService {
     int createGroup(Group group);
@@ -12,4 +15,6 @@ public interface GroupService {
     void readGroupMessage(int idGroupMessage);
     void updateGroupMessage(GroupMessage groupMessage);
     void deleteGroupMessage(GroupMessage groupMessage);
+    List<GroupMessage> getGroupMessages(int idGroup);
+    List<GroupUser> getGroupUsers(int idGroup);
 }

@@ -3,6 +3,7 @@ package jchat.db.dao.impl;
 import jchat.db.dao.GroupMessageDAO;
 import jchat.db.dataSet.GroupMessage;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -41,5 +42,12 @@ public class GroupMessageDAOImpl implements GroupMessageDAO {
     @Override
     public List<GroupMessage> findAll() {
         return sessionFactory.getCurrentSession().createQuery("from GroupMessage", GroupMessage.class).getResultList();
+    }
+
+    @Override
+    public List<GroupMessage> getGroupMessages(int idGroup) {
+        Query<GroupMessage> query = sessionFactory.getCurrentSession().createQuery("from GroupMessage groupMessage join fetch groupMessage.message.sender where groupMessage.group.idGroup = :idGroup", GroupMessage.class);
+        query.setParameter("idGroup", idGroup);
+        return query.getResultList();
     }
 }

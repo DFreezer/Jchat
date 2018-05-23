@@ -109,25 +109,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Set<UserContact> getUserContacts(int idUser) {
+    public List<UserContact> getUserContacts(int idUser) {
         return userDAO.getUserContacts(idUser);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Set<Message> getUserMessages(int idUser) {
+    public List<Message> getUserMessages(int idUser) {
         return userDAO.getUserMessages(idUser);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Set<Group> getUserGroups(int idUser) {
+    public List<Group> getUserGroups(int idUser) {
         return userDAO.getUserGroups(idUser);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Set<UserRole> getUserRoles(int idUser) {
+    public List<UserRole> getUserRoles(int idUser) {
         return userDAO.getUserRoles(idUser);
     }
 
@@ -177,5 +177,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteMessage(Message message) {
         messageDAO.delete(message);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteMessageById(int idMessage) {
+        deleteMessage(readMessage(idMessage));
     }
 }
