@@ -21,4 +21,8 @@ public interface UserService {
     void updateUserInfo(UserInfo userInfo);
     void deleteUserInfo(UserInfo userInfo);
     int createUserContact(UserContact userContact);
+    int createMessage(Message message);
+    Message readMessage(int idMessage);
+    void updateMessage(Message message);
+    void deleteMessage(Message message);
 }

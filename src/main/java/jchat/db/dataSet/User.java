@@ -1,6 +1,8 @@
 package jchat.db.dataSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -35,6 +37,7 @@ public class User {
     private UserInfo userInfo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     @JsonIgnore
     private Set<UserContact> userContacts;
 

@@ -26,15 +26,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final RoleDAO roleDAO;
     private final UserInfoDAO userInfoDAO;
     private final UserContactDAO userContactDAO;
+    private final MessageDAO messageDAO;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO, PasswordEncoder passwordEncoder, UserRoleDAO userRoleDAO, RoleDAO roleDAO, UserInfoDAO userInfoDAO, UserContactDAO userContactDAO) {
+    public UserServiceImpl(UserDAO userDAO, PasswordEncoder passwordEncoder, UserRoleDAO userRoleDAO, RoleDAO roleDAO, UserInfoDAO userInfoDAO, UserContactDAO userContactDAO, MessageDAO messageDAO) {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
         this.userRoleDAO = userRoleDAO;
         this.roleDAO = roleDAO;
         this.userInfoDAO = userInfoDAO;
         this.userContactDAO = userContactDAO;
+        this.messageDAO = messageDAO;
     }
 
     @Override
@@ -151,5 +153,29 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional(rollbackFor = Exception.class)
     public int createUserContact(UserContact userContact) {
         return userContactDAO.create(userContact);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int createMessage(Message message) {
+        return messageDAO.create(message);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Message readMessage(int idMessage) {
+        return messageDAO.read(idMessage);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateMessage(Message message) {
+        messageDAO.update(message);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteMessage(Message message) {
+        messageDAO.delete(message);
     }
 }
