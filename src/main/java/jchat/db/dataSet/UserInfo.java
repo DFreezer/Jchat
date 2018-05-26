@@ -1,5 +1,7 @@
 package jchat.db.dataSet;
 
+import org.hibernate.annotations.LazyGroup;
+
 import javax.persistence.*;
 
 @Entity

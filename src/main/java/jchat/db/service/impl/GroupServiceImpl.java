@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.List;
 
 @Service("groupService")
@@ -31,7 +33,9 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int createGroup(Group group) {
-        return groupDAO.create(group);
+        Integer idGroup = groupDAO.create(group);
+        groupUserDAO.create(new GroupUser(new Date(Calendar.getInstance().getTimeInMillis()), group, group.getCreator()));
+        return idGroup;
     }
 
     @Override
@@ -86,5 +90,11 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(rollbackFor = Exception.class)
     public List<GroupUser> getGroupUsers(int idGroup) {
         return groupUserDAO.getGroupUsers(idGroup);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<GroupMessage> getGroupMessagesByUser(String username, int idGroup) {
+        return groupMessageDAO.getGroupMessagesByUser(username, idGroup);
     }
 }

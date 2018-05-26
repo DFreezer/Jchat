@@ -2,6 +2,8 @@ package jchat.db.dao;
 
 import jchat.db.dataSet.UserContact;
 
-public interface UserContactDAO extends GenericDAO<UserContact, Integer> {
+import java.util.List;
 
+public interface UserContactDAO extends GenericDAO<UserContact, Integer> {
+    List<UserContact> findUserContacts(int idUser, String pattern);
 }

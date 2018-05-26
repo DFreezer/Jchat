@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900" rel="stylesheet">
     <link href="../../resources/css/hamburgers.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="../../resources/css/main.css">
     <script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js" integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+" crossorigin="anonymous"></script>
     <script type="text/javascript" src="<s:url value="/webjars/sockjs-client/1.1.2/sockjs.min.js"/>"></script>
@@ -83,7 +84,7 @@
                         <img class="img-fluid" src="../../resources/img/avatar-inside-a-circle.svg" alt="" height="80" width="80">
                     </div>
                     <div class="col-8 p-0 account-name">
-                        Mike
+                        ${username}
                     </div>
                 </div>
                 <div class="row m-0 chat-menu">
@@ -131,7 +132,7 @@
                             <div class="row m-0">
                                 <div class="col-12 p-0">
                                     <div class="input-group mb-3 user-list-search">
-                                        <input type="text" class="form-control" placeholder="Search users" aria-label="Search" aria-describedby="basic-addon2">
+                                        <input type="text" class="form-control group-user-search" placeholder="Search users" aria-label="Search" aria-describedby="basic-addon2">
                                         <div class="input-group-append">
                                             <button class="btn btn-outline-secondary" type="button">Search</button>
                                         </div>
@@ -220,6 +221,7 @@
 </div>
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <%--<jsp:include page="chatJS.jsp"/>--%>
@@ -249,6 +251,9 @@
             success : function (data) {
                 $('.messages').append(data);
                 autoScroll();
+            },
+            error : function (data) {
+                $('body').html(data.responseText);
             }
         });
     }
@@ -266,6 +271,9 @@
                     success : function (data) {
                         $('.user-groups').append(data);
                         $('#modal-create-group').modal('toggle');
+                    },
+                    error : function (data) {
+                        $('body').html(data.responseText);
                     }
                 });
             }
@@ -284,95 +292,120 @@
         $('.group-details-name span').text($('.list-group .group-active .group-name span').text());
     }
 
-    $(document).ready(function () {
-        // sets active condition to group item
-        $(this).on('click', '.groups-item', function() {
-            $(this).parent().find('li').removeClass('group-active');
-            $(this).toggleClass('group-active');
-        });
+    // sets active condition to group item
+    $('body').on('click', '.groups-item', function() {
+        $(this).parent().find('li').removeClass('group-active');
+        $(this).toggleClass('group-active');
+    });
 
-        $(this).on('click', '.groups-item', function () {
-            if(!isConnected) {
+    $('body').on('click', '.groups-item', function () {
+        if(!isConnected) {
+            connectToGroup(this);
+        } else {
+            if(currentGroupId != null) {
+                stompClient.unsubscribe(currentGroupId);
+                isConnected = false;
                 connectToGroup(this);
-            } else {
-                if(currentGroupId != null) {
-                    stompClient.unsubscribe(currentGroupId);
-                    isConnected = false;
-                    connectToGroup(this);
-                }
+            }
+        }
+    });
+
+    // message send button event
+    $('body').on('click', '.send-message-btn', function () {
+        stompClient.send('/app/rooms/' + currentGroupId, {}, $('#send-form').val());
+        $('#send-form').val('');
+    });
+
+    // group edit name button event
+    $('body').on('click', '.group-edit-btn', function () {
+        var newGroupName = $('.group-edit-input').val();
+        $.ajax({
+            type : 'POST',
+            url : '${pageContext.request.contextPath}/jchat/group-edit',
+            data : { groupId : currentGroupId,  groupName : newGroupName },
+            success : function () {
+                $('.groups-item[group-item-id=' + currentGroupId + '] .group-name span').text(newGroupName);
+                $('.group-details-name span').text(newGroupName);
+            },
+            error : function (data) {
+                $('body').html(data.responseText);
             }
         });
+    });
 
-        // message send button event
-        $(this).on('click', '.send-message-btn', function () {
-            stompClient.send('/app/rooms/' + currentGroupId, {}, $('#send-form').val());
-            $('#send-form').val('');
-        });
+    // message click event
+    $('body').on('click', '.message', function (e) {
+        e.stopPropagation();
+        var currMessage = $(this);
+        var currMsgControl  = currMessage.find('.message-control');
+        currMsgControl.toggleClass('d-none');
+        currMsgControl.toggleClass('d-flex');
 
-        // group edit name button event
-        $(this).on('click', '.group-edit-btn', function () {
-            var newGroupName = $('.group-edit-input').val();
+        // message delete event
+        currMessage.on('click', '.message-delete', function () {
+            var msgId = currMessage.attr('message-item-id');
             $.ajax({
                 type : 'POST',
-                url : '${pageContext.request.contextPath}/jchat/group-edit',
-                data : { groupId : currentGroupId,  groupName : newGroupName },
+                url : '${pageContext.request.contextPath}/jchat/delete-message',
+                data : { msgId : msgId },
                 success : function () {
-                    $('.groups-item[group-item-id=' + currentGroupId + '] .group-name span').text(newGroupName);
-                    $('.group-details-name span').text(newGroupName);
+                    currMessage.remove();
+                },
+                error : function (data) {
+                    $('body').html(data.responseText);
                 }
             });
         });
-
-        // message click event
-        $(this).on('click', '.message', function (e) {
+        var currMsgEdit = currMessage.find(".message-edit-menu");
+        // message edit event
+        currMessage.on('click', '.message-edit', function (e) {
             e.stopPropagation();
-            var currMessage = $(this);
-            var currMsgControl  = currMessage.find('.message-control');
-            currMsgControl.toggleClass('d-none');
-            currMsgControl.toggleClass('d-flex');
-
-            // message delete event
-            currMessage.on('click', '.message-delete', function () {
-                var msgId = currMessage.attr('message-item-id');
-                console.log(msgId);
+            currMsgEdit.toggleClass('d-none');
+            currMsgEdit.toggleClass('d-block');
+            currMsgEdit.find('#message-edit-field').val(currMessage.find('.message-payload').text());
+            currMessage.on('click', '.message-save-edit', function (e) {
+                e.stopPropagation();
+                var newPayload = currMsgEdit.find('#message-edit-field').val();
+                console.log(newPayload);
                 $.ajax({
                     type : 'POST',
-                    url : '${pageContext.request.contextPath}/jchat/delete-message',
-                    data : { msgId : msgId },
-                    success : function (data) {
-                        currMessage.remove();
+                    url : '${pageContext.request.contextPath}/jchat/edit-message',
+                    data : { msgId : currMessage.attr('message-item-id'), msgBody : newPayload },
+                    success : function () {
+                        currMessage.find('.message-payload').text(newPayload);
+                        currMsgEdit.toggleClass('d-none');
+                        currMsgEdit.toggleClass('d-block');
                     },
                     error : function (data) {
                         $('body').html(data.responseText);
                     }
                 });
             });
-            var currMsgEdit = currMessage.find(".message-edit-menu");
-            // message edit event
-            currMessage.on('click', '.message-edit', function (e) {
-                e.stopPropagation();
-                currMsgEdit.toggleClass('d-none');
-                currMsgEdit.toggleClass('d-block');
-                currMsgEdit.find('#message-edit-field').val(currMessage.find('.message-payload').text());
-                currMessage.on('click', '.message-save-edit', function (e) {
-                    e.stopPropagation();
-                    var newPayload = currMsgEdit.find('#message-edit-field').val();
-                    console.log(newPayload);
+        });
+    });
+
+    $('body').on('click', '.search-btn', function () {
+        $.ajax({
+            type : 'POST',
+            url : '${pageContext.request.contextPath}/jchat/search-messages',
+            data : { username : $('#search-form').val(), idGroup : currentGroupId },
+            success : function (messages) {
+                $('.messages').empty();
+                $.each(messages, function (key, message) {
                     $.ajax({
-                        type : 'POST',
-                        url : '${pageContext.request.contextPath}/jchat/edit-message',
-                        data : { msgId : currMessage.attr('message-item-id'), msgBody : newPayload },
-                        success : function () {
-                            currMessage.find('.message-payload').text(newPayload);
-                            currMsgEdit.toggleClass('d-none');
-                            currMsgEdit.toggleClass('d-block');
-                        },
-                        error : function (data) {
-                            $('body').html(data.responseText);
+                        type : 'GET',
+                        url : '${pageContext.request.contextPath}/jchat/message',
+                        data : { msgId : message.message.idMessage, msgSender : message.message.sender.username, msgBody : message.message.body, msgDate : new Date(message.message.date).toLocaleDateString() },
+                        success : function (data) {
+                            $('.messages').append(data);
+                            autoScroll();
                         }
                     });
                 });
-            });
+            },
+            error : function (data) {
+                $('body').html(data.responseText);
+            }
         });
     });
 
@@ -381,7 +414,7 @@
         currentGroupId = $(obj).attr('group-item-id');
         stompClient.subscribe('/topic/group/' + currentGroupId, function (message) {
             getMessage(JSON.parse(message.body));
-        });
+        }, { id : currentGroupId });
         isConnected = true;
         selectGroup(currentGroupId);
     }
@@ -407,6 +440,44 @@
             $('.left-slider-menu').toggle();
             $('.left-slider-menu').css({"left" : "0"});
         }
+    });
+
+    // create group search autocomplete
+    $('.group-user-search').autocomplete({
+        source: function( request, response ) {
+            $.ajax( {
+                url: '${pageContext.request.contextPath}/jchat/search-contacts',
+                data: {
+                    term : request.term
+                },
+                success: function(data) {
+                    response(
+                        $.map(data, function(value) {
+                            return { label : value.contact.username, value : value.contact.idUser }
+                        })
+                    );
+                }
+            });
+        },
+        minLength: 0,
+        response : function(event, ui) {
+            $('.user-list-item').each(function(key) {
+                var currItem = $(this);
+                $.each(ui.content, function (key, value) {
+                    if(value.label !== currItem.find('.user-name').text()) {
+                        currItem.hide();
+                    } else {
+                        currItem.show();
+                        return false;
+                    }
+                });
+            });
+        }
+    });
+
+    // contact search item event
+    $('body').on('click', '.user-list-item', function () {
+        $(this).toggleClass('active');
     });
 </script>
 <!-- Loader -->

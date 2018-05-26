@@ -184,4 +184,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void deleteMessageById(int idMessage) {
         deleteMessage(readMessage(idMessage));
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateMessageBody(int idMessage, String body) {
+        Message message = readMessage(idMessage);
+        message.setBody(body);
+        updateMessage(message);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<UserContact> findUserContacts(int idUser, String pattern) {
+        return userContactDAO.findUserContacts(idUser, pattern);
+    }
 }

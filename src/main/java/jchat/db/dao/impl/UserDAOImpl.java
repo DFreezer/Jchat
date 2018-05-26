@@ -19,7 +19,6 @@ public class UserDAOImpl implements UserDAO {
         this.sessionFactory = sessionFactory;
     }
 
-
     @Override
     public Integer create(User obj) {
         return (Integer) sessionFactory.getCurrentSession().save(obj);
@@ -61,28 +60,36 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<UserContact> getUserContacts(int idUser) {
-        Query<UserContact> query = sessionFactory.getCurrentSession().createQuery("from UserContact userContact join fetch userContact.user join fetch userContact.contact where userContact.user.idUser =:idUser", UserContact.class);
+        Query<UserContact> query = sessionFactory
+                .getCurrentSession()
+                .createQuery("from UserContact userContact join fetch userContact.user join fetch userContact.contact where userContact.user.idUser =:idUser", UserContact.class);
         query.setParameter("idUser", idUser);
         return query.getResultList();
     }
 
     @Override
     public List<Message> getUserMessages(int idUser) {
-        Query<Message> query = sessionFactory.getCurrentSession().createQuery("from Message where user.idUser =:idUser", Message.class);
+        Query<Message> query = sessionFactory
+                .getCurrentSession()
+                .createQuery("from Message where user.idUser =:idUser", Message.class);
         query.setParameter("idUser", idUser);
         return query.getResultList();
     }
 
     @Override
     public List<Group> getUserGroups(int idUser) {
-        Query<Group> query = sessionFactory.getCurrentSession().createQuery("from Group where creator.idUser =:idUser", Group.class);
+        Query<Group> query = sessionFactory
+                .getCurrentSession()
+                .createQuery("from Group groups join fetch groups.groupUsers groupUsers join fetch groupUsers.user user where user.idUser = :idUser", Group.class);
         query.setParameter("idUser", idUser);
         return query.getResultList();
     }
 
     @Override
     public List<UserRole> getUserRoles(int idUser) {
-        Query<UserRole> query = sessionFactory.getCurrentSession().createQuery("from UserRole where user.idUser =:idUser", UserRole.class);
+        Query<UserRole> query = sessionFactory
+                .getCurrentSession()
+                .createQuery("from UserRole where user.idUser =:idUser", UserRole.class);
         query.setParameter("idUser", idUser);
         return query.getResultList();
     }

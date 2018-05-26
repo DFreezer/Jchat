@@ -1,5 +1,7 @@
 package jchat.db.dataSet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,6 +19,7 @@ public class GroupMessage {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "idGroup")
+    @JsonIgnore
     private Group group;
 
     public GroupMessage() {

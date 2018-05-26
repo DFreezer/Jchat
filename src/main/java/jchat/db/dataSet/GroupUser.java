@@ -1,7 +1,7 @@
 package jchat.db.dataSet;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "groupuser")
@@ -13,6 +13,7 @@ public class GroupUser {
     private int idGroupUser;
 
     @Column(name = "regDate")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date regDate;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

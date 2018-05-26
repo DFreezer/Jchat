@@ -35,9 +35,9 @@
 <body>
 <div class="container-fluid h-100 d-flex justify-content-center align-items-center">
     <div class="row">
-        <div class="col-12 p-3 d-flex justify-content-center align-items-center">
-            <h1 class="display-1 text-center">Welcome to JChat</h1>
-        </div>
+        <%--<div class="col-12 p-3 d-flex justify-content-center align-items-center">--%>
+            <%--<h1 class="display-1 text-center">Welcome to JChat</h1>--%>
+        <%--</div>--%>
         <div class="col-12 p-1 h-100 d-flex justify-content-center align-items-center">
             <div class="authMenu">
                 <ul>

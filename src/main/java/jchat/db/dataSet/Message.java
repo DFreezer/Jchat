@@ -18,7 +18,7 @@ public class Message {
     @Column(name = "date")
     private Date date;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idSender")
     private User sender;
 

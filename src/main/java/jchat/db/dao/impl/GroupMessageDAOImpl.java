@@ -46,7 +46,16 @@ public class GroupMessageDAOImpl implements GroupMessageDAO {
 
     @Override
     public List<GroupMessage> getGroupMessages(int idGroup) {
-        Query<GroupMessage> query = sessionFactory.getCurrentSession().createQuery("from GroupMessage groupMessage join fetch groupMessage.message.sender where groupMessage.group.idGroup = :idGroup", GroupMessage.class);
+        Query<GroupMessage> query = sessionFactory.getCurrentSession().createQuery("from GroupMessage groupMessage join fetch groupMessage.message.sender where groupMessage.group.idGroup = :idGroup order by groupMessage.idGroupMessage asc", GroupMessage.class);
+        query.setParameter("idGroup", idGroup);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<GroupMessage> getGroupMessagesByUser(String username, int idGroup) {
+        Query<GroupMessage> query = sessionFactory.getCurrentSession()
+                .createQuery("from GroupMessage groupMessage join fetch groupMessage.message.sender user join fetch groupMessage.group where user.username = :username and groupMessage.group.idGroup = :idGroup", GroupMessage.class);
+        query.setParameter("username", username);
         query.setParameter("idGroup", idGroup);
         return query.getResultList();
     }

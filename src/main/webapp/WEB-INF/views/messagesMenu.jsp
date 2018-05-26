@@ -70,6 +70,19 @@
         </div>
     </div>
 </div>
+<!-- Messages Search -->
+<div class="row messages-search align-items-center">
+    <div class="col-12">
+        <div class="input-group">
+            <input type="text" id="search-form" class="form-control" placeholder="Enter sender name" aria-label="Enter sender name" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary search-btn" type="button">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Modal edit group name -->
 <div class="modal fade modal-edit-group" id="modal-edit-group" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">

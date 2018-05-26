@@ -25,4 +25,6 @@ public interface UserService {
     void updateMessage(Message message);
     void deleteMessage(Message message);
     void deleteMessageById(int idMessage);
+    void updateMessageBody(int idMessage, String body);
+    List<UserContact> findUserContacts(int idUser, String pattern);
 }

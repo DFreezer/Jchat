@@ -16,7 +16,6 @@ import java.security.Principal;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping(value = "/jchat", method = {RequestMethod.GET, RequestMethod.POST})
@@ -40,12 +39,13 @@ public class ChatController {
         List<UserContact> userContacts = userService.getUserContacts(user.getIdUser());
         if (userContacts != null) {
             modelMap.addAttribute("userContacts", userContacts);
+            modelMap.addAttribute("username", principal.getName());
         }
         return "main";
     }
 
     @GetMapping(value = "/groups/{groupId}")
-    public String messagesMenu(@PathVariable("groupId") String groupId, ModelMap modelMap) {
+    public String messagesMenu(@PathVariable("groupId") String groupId, ModelMap modelMap, Principal principal) {
         if (groupId != null) {
             int idGroup = Integer.parseInt(groupId);
             List<GroupMessage> allGroupMessages = groupService.getGroupMessages(idGroup);
@@ -55,6 +55,7 @@ public class ChatController {
                 modelMap.addAttribute("groupMessages", allGroupMessages);
                 modelMap.addAttribute("usersCount", groupUsersCount);
                 modelMap.addAttribute("groupUsers", groupUserList);
+                modelMap.addAttribute("username", principal.getName());
             }
         }
         return "messagesMenu";
@@ -104,8 +105,19 @@ public class ChatController {
     @PostMapping(value = "/edit-message")
     @ResponseBody
     public void editMessage(@RequestParam("msgId") int messageId, @RequestParam("msgBody") String body) {
-        Message message = userService.readMessage(messageId);
-        message.setBody(body);
-        userService.updateMessage(message);
+        userService.updateMessageBody(messageId, body);
+    }
+
+    @PostMapping(value = "/search-messages")
+    @ResponseBody
+    public List<GroupMessage> searchMessages(@RequestParam("username") String username, @RequestParam("idGroup") int idGroup) {
+        return groupService.getGroupMessagesByUser(username, idGroup);
+    }
+
+    @PostMapping(value = "/search-contacts")
+    @ResponseBody
+    public List<UserContact> searchContacts(@RequestParam("term") String pattern, Principal principal) {
+        User user = userService.getUserByName(principal.getName());
+        return userService.findUserContacts(user.getIdUser(), pattern);
     }
 }

@@ -3,6 +3,7 @@ package jchat.db.dao.impl;
 import jchat.db.dao.UserContactDAO;
 import jchat.db.dataSet.UserContact;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -41,5 +42,13 @@ public class UserContactDAOImpl implements UserContactDAO {
     @Override
     public List<UserContact> findAll() {
         return sessionFactory.getCurrentSession().createQuery("from UserContact", UserContact.class).getResultList();
+    }
+
+    @Override
+    public List<UserContact> findUserContacts(int idUser, String pattern) {
+        Query<UserContact> query = sessionFactory.getCurrentSession().createQuery("from UserContact userContact join fetch userContact.contact contact join fetch userContact.user user where user.idUser = :idUser and contact.username like :pattern", UserContact.class);
+        query.setParameter("idUser", idUser);
+        query.setParameter("pattern", "%" + pattern + "%");
+        return query.getResultList();
     }
 }

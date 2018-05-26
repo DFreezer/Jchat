@@ -17,4 +17,5 @@ public interface GroupService {
     void deleteGroupMessage(GroupMessage groupMessage);
     List<GroupMessage> getGroupMessages(int idGroup);
     List<GroupUser> getGroupUsers(int idGroup);
+    List<GroupMessage> getGroupMessagesByUser(String username, int idGroup);
 }

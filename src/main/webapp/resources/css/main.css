@@ -361,3 +361,10 @@ ul {
 	0% { transform: rotate(0deg); }
 	100% { transform: rotate(360deg); }
 }
+
+/* contacts search items */
+#user-list .active {
+	background-color: #90BD2B;
+	color: #192022;
+	border-color: #90BD2B;
+}
